@@ -23,16 +23,16 @@ import { Link } from 'react-router-dom';
 const validationSchema = yup.object({
   capacidade: yup
     .number()
-    .typeError('Margem do rio deve ser um número')
-    .required('Insira a margem do rio'),
+    .typeError('A capacidade deve ser um número')
+    .required('Insira a capacidade'),
   custoBase: yup
     .number()
-    .typeError('Distância da fábrica deve ser um número')
-    .required('Insira a distância da fábrica'),
+    .typeError('O custo da base deve ser um número')
+    .required('Insira o custo da base'),
   custoLateral: yup
     .number()
-    .typeError('Custo do cabo pelo rio deve ser um número')
-    .required('Insira o custo do cabo pelo rio'),
+    .typeError('Custo da lateral deve ser um número')
+    .required('Insira o custo da lateral'),
   fechadoEmCima: yup.boolean(),
 });
 
