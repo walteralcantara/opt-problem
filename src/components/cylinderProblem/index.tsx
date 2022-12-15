@@ -21,10 +21,10 @@ import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 
 const validationSchema = yup.object({
-  capacidade: yup
+  volume: yup
     .number()
-    .typeError('A capacidade deve ser um número')
-    .required('Insira a capacidade'),
+    .typeError('O volume deve ser um número')
+    .required('Insira um volume'),
   custoBase: yup
     .number()
     .typeError('O custo da base deve ser um número')
@@ -33,7 +33,7 @@ const validationSchema = yup.object({
     .number()
     .typeError('Custo da lateral deve ser um número')
     .required('Insira o custo da lateral'),
-  fechadoEmCima: yup.boolean(),
+  comTampa: yup.boolean(),
 });
 
 /*
@@ -66,10 +66,10 @@ function CylinderProblem() {
 
   const formik = useFormik({
     initialValues: {
-      capacidade: 0,
+      volume: 0,
       custoBase: 0,
       custoLateral: 0,
-      fechadoEmCima: false,
+      comTampa: false,
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -83,27 +83,26 @@ function CylinderProblem() {
         return;
       }
 
-      var raio = Math.pow(values.capacidade / (Math.PI * 2), 1 / 3);
-
-      // calcula a altura do cilindro
-      var altura = values.capacidade / (Math.PI * Math.pow(raio, 2));
-
-      // calcula o custo total do cilindro
-      var custoTotal;
-      if (values.fechadoEmCima) {
-        // se o cilindro está fechado em cima, o custo da base e da lateral é somado
-        custoTotal =
-          (Math.PI * Math.pow(raio, 2) + 2 * Math.PI * raio * altura) *
-            values.custoBase +
-          2 * Math.PI * raio * altura * values.custoLateral;
-      } else {
-        // se o cilindro está aberto em cima, o custo da base é desconsiderado
-        custoTotal = 2 * Math.PI * raio * altura * values.custoLateral;
+      let ntampa = 1;
+      if (values.comTampa) {
+        ntampa = 2;
       }
+
+      let raio = Math.pow(
+        (values.volume * values.custoLateral * 2) / (2 * values.custoBase),
+        1 / 3
+      );
+      let base = Math.PI * Math.pow(raio, 2);
+      let altura = values.volume / Math.pow(raio, 2);
+      let areaLateral = 2 * Math.PI * raio * altura;
+      let custoTotal =
+        values.custoBase * ntampa * base + values.custoLateral * areaLateral;
 
       const result = {
         raio,
         altura,
+        base,
+        areaLateral,
         custoTotal,
       };
 
@@ -114,6 +113,8 @@ function CylinderProblem() {
   const [output, setOutput] = useState({
     raio: 0,
     altura: 0,
+    base: 0,
+    areaLateral: 0,
     custoTotal: 0,
   });
 
@@ -142,15 +143,13 @@ function CylinderProblem() {
       >
         <div style={{ display: 'flex', gap: '10px' }}>
           <TextField
-            id='capacidade'
-            name='capacidade'
-            label='Capacidade'
-            value={formik.values.capacidade}
+            id='volume'
+            name='volume'
+            label='Volume'
+            value={formik.values.volume}
             onChange={formik.handleChange}
-            error={
-              formik.touched.capacidade && Boolean(formik.errors.capacidade)
-            }
-            helperText={formik.touched.capacidade && formik.errors.capacidade}
+            error={formik.touched.volume && Boolean(formik.errors.volume)}
+            helperText={formik.touched.volume && formik.errors.volume}
             sx={{ width: 280 }}
             InputProps={{
               endAdornment: (
@@ -197,14 +196,14 @@ function CylinderProblem() {
             <FormControlLabel
               control={
                 <Switch
-                  id='fechadoEmCima'
-                  name='fechadoEmCima'
-                  value={formik.values.fechadoEmCima}
+                  id='comTampa'
+                  name='comTampa'
+                  value={formik.values.comTampa}
                   onChange={formik.handleChange}
                 />
               }
               label='Está com tampa?'
-              labelPlacement="top"
+              labelPlacement='top'
             />
           </FormGroup>
         </div>
@@ -226,7 +225,9 @@ function CylinderProblem() {
       <Box sx={{ display: 'flex', gap: '10px' }}>
         <Card>
           <CardContent>
-            <Typography sx={{ textAlign: 'left' }}>Custo total da embalagem</Typography>
+            <Typography sx={{ textAlign: 'left' }}>
+              Custo total da embalagem
+            </Typography>
             <Typography sx={{ fontSize: 24, fontWeight: 'bold' }}>
               {output.custoTotal.toLocaleString('pt-BR', {
                 style: 'currency',
@@ -254,6 +255,28 @@ function CylinderProblem() {
               sx={{ fontSize: 24, fontWeight: 'bold', textAlign: 'left' }}
             >
               {output.raio.toFixed(2)}cm
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent>
+            <Typography sx={{ textAlign: 'left' }}>Area lateral</Typography>
+            <Typography
+              sx={{ fontSize: 24, fontWeight: 'bold', textAlign: 'left' }}
+            >
+              {output.areaLateral.toFixed(2)}cm
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent>
+            <Typography sx={{ textAlign: 'left' }}>Base</Typography>
+            <Typography
+              sx={{ fontSize: 24, fontWeight: 'bold', textAlign: 'left' }}
+            >
+              {output.base.toFixed(2)}cm
             </Typography>
           </CardContent>
         </Card>

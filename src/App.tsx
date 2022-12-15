@@ -21,6 +21,7 @@ function App() {
   return (
     <React.Fragment>
 
+
     <main style={{ display: 'flex', gap: '10px' }}>
       <Button variant="contained" size="large">
         <Link to="/1" style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -35,6 +36,9 @@ function App() {
       </Button>
     </main>
 
+    <Typography sx={{ textAlign: 'center', fontSize: 22, marginTop: '60px' }}>
+      Walter Moura Alcantara - JC3003213
+    </Typography>
 
     </React.Fragment>
   );
